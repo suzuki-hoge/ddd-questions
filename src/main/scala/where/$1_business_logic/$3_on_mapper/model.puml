@@ -1,0 +1,59 @@
+@startuml
+
+package domain {
+  class CampaignTargetCustomer {
+    - id
+  }
+  class CustomerId {
+    - String
+  }
+  interface CustomerRepository {
+    List<CampaignTargetCustomer> campaignTarget()
+  }
+  interface NoticeRepository {
+    void campaign(CampaignTargetCustomer)
+  }
+
+  CustomerRepository -left-> CampaignTargetCustomer : found
+  NoticeRepository -right-> CampaignTargetCustomer
+
+  CampaignTargetCustomer -down-> CustomerId
+}
+
+package mapper {
+  class CustomerRepositoryMapper {
+    List<CampaignTargetCustomer> campaignTarget()
+  }
+  enum Plan {
+    FREE, PREMIUM
+  }
+  class StartDate {
+    - LocalDate
+    + Boolean isPassedNYears(Int)
+  }
+  class Customer {
+    - id
+    - plan
+    - start
+    + Boolean isCampaignTarget()
+    + CampaignTargetCustomer toCampaignTarget()
+  }
+  package table {
+    class CustomerRepositoryTable {
+      List<Customer> all()
+    }
+  }
+
+  CustomerRepositoryMapper -up-> CustomerRepositoryTable : find
+  CustomerRepositoryMapper --> Customer : filter & map
+  Customer -up-> Plan : is
+  Customer -up-> StartDate : is
+  Customer -down-> CampaignTargetCustomer : to
+}
+
+object database
+
+CustomerRepositoryMapper -down-|> CustomerRepository
+CustomerRepositoryTable -up-> database : select all
+
+@enduml

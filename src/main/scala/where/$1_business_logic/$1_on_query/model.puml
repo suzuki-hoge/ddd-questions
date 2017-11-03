@@ -1,0 +1,33 @@
+@startuml
+
+package domain {
+  class CampaignTargetCustomer {
+    - id
+  }
+  class CustomerId {
+    - String
+  }
+  interface CustomerRepository {
+    List<CampaignTargetCustomer> campaignTarget()
+  }
+  interface NoticeRepository {
+    void campaign(CampaignTargetCustomer)
+  }
+
+  CampaignTargetCustomer -down-> CustomerId
+  CustomerRepository -left-> CampaignTargetCustomer : found
+  NoticeRepository -right-> CampaignTargetCustomer
+}
+
+package table {
+  class CustomerRepositoryTable {
+    List<CampaignTargetCustomer> campaignTarget()
+  }
+}
+
+object database
+
+CustomerRepositoryTable -down-|> CustomerRepository
+CustomerRepositoryTable -up-> database : where plan ... and start ...
+
+@enduml
