@@ -1,0 +1,31 @@
+@startuml
+
+package domain {
+  enum Status {
+    Confirming, Using, Stopping, Ended
+    + {static} Status create(String start, String confirm, String arrears, String end)
+  }
+  class ContractId {
+    - String
+  }
+  interface ContractRepository {
+    Status status(ContractId)
+  }
+
+  ContractRepository --> ContractId
+  ContractRepository -right-> Status
+}
+
+package table {
+  class ContractRepositoryTable {
+    Status status(ContractId)
+  }
+}
+
+object database
+
+ContractRepositoryTable -down-|> ContractRepository
+ContractRepositoryTable -up-> database : select start, confirm,,, from ...
+ContractRepositoryTable --> Status : (start, confirm,,,) -> Status
+
+@enduml

@@ -1,0 +1,62 @@
+@startuml
+
+namespace domain {
+  enum Status {
+    Confirming, Using, Stopping, Ended
+  }
+  class ContractId {
+    - String
+  }
+  interface ContractRepository {
+    + Status status(ContractId)
+  }
+
+  domain.ContractRepository --> ContractId
+  domain.ContractRepository -right-> Status
+}
+
+namespace mapper {
+  namespace table {
+    class ContractRepositoryTable {
+      (Option[StartDate], Option[ConfirmDate], Option[Arrears], Option[EndDate]) row(ContractId)
+    }
+  }
+  class ContractRepositoryMapper {
+    Status status(ContractId)
+  }
+  class StartDate {
+    - LocalDate
+  }
+  class ConfirmDate {
+    - LocalDate
+  }
+  class Arrears {
+    - Int
+  }
+  class EndDate {
+    - LocalDate
+  }
+  class Status {
+    + {static} Status create(Option[StartDate], Option[ConfirmDate], Option[Arrears], Option[EndDate])
+  }
+}
+
+object database
+
+mapper.ContractRepositoryMapper -down-|> domain.ContractRepository
+mapper.ContractRepositoryMapper -up--> mapper.table.ContractRepositoryTable
+mapper.table.ContractRepositoryTable -up-> database : select start, confirm,,, from ...
+
+mapper.ContractRepositoryMapper -right-> mapper.Status
+mapper.Status -up-> mapper.StartDate
+mapper.Status -up-> mapper.ConfirmDate
+mapper.Status -up-> mapper.Arrears
+mapper.Status -up-> mapper.EndDate
+mapper.table.ContractRepositoryTable -down-> mapper.StartDate
+mapper.table.ContractRepositoryTable -down-> mapper.ConfirmDate
+mapper.table.ContractRepositoryTable -down-> mapper.Arrears
+mapper.table.ContractRepositoryTable -down-> mapper.EndDate
+
+mapper.Status -down-> domain.Status
+
+@enduml

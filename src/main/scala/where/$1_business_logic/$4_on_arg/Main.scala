@@ -7,7 +7,7 @@ object Main extends App {
   val finder: CustomerRepository = ???
   val noticer: NoticeRepository = ???
 
-  val targets: List[CampaignTargetCustomer] = finder.campaignTarget(Target())
+  val targets: List[CampaignTargetCustomer] = finder.campaignTarget(new Target())
 
   targets.foreach(noticer.campaign)
 }
